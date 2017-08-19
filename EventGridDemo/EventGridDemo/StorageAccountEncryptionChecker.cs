@@ -39,7 +39,7 @@ namespace EventGridDemo
             if (eventData.data.resourceProvider != "Microsoft.Storage" || 
                 eventData.eventType != "Microsoft.Resources.ResourceWriteSuccess")
             {
-                log.Info("Not an Azure Storage Resource");
+                log.Info("Not a new Azure Storage Resource, not interested");
                 return req.CreateResponse(HttpStatusCode.OK, "Not an Azure Storage Resource");
             }
 
@@ -47,12 +47,14 @@ namespace EventGridDemo
             string tenantID = eventData.data.tenantId;
 
             string subject = eventData.subject.ToString();
-            Dictionary<string, string> subjectDictionary = subject.ParseAzureResource();
+            Dictionary<string, string> subjectDictionary = subject.ParseAzureResourceId();
 
-            ServicePrincipalLoginInformation sp = new ServicePrincipalLoginInformation();
-
-            sp.ClientId = ConfigurationManager.AppSettings["ClientId"];
-            sp.ClientSecret = ConfigurationManager.AppSettings["ClientSecret"];
+            ServicePrincipalLoginInformation sp =
+                new ServicePrincipalLoginInformation
+                {
+                    ClientId = ConfigurationManager.AppSettings["ClientId"],
+                    ClientSecret = ConfigurationManager.AppSettings["ClientSecret"]
+                };
 
             string storageAccountID = eventData.subject;
             string storageAccountName = subjectDictionary["storageAccounts"];
@@ -88,7 +90,7 @@ namespace EventGridDemo
             return req.CreateResponse(HttpStatusCode.OK, returnText);
         }
 
-        private static Dictionary<string, string> ParseAzureResource(this string resourceID)
+        private static Dictionary<string, string> ParseAzureResourceId(this string resourceID)
         {
             return resourceID.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select((value, index) => new { Index = index, Value = value }).GroupBy(x => x.Index / 2).Select(
