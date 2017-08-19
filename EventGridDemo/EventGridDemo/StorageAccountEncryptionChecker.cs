@@ -36,8 +36,7 @@ namespace EventGridDemo
             dynamic eventData = JsonConvert.DeserializeObject<ExpandoObject>(array[0].ToString(), expConverter);
 
             // We only want to process events when a Storage Account is created successfully 
-            if (eventData.data.resourceProvider != "Microsoft.Storage" || 
-                eventData.eventType != "Microsoft.Resources.ResourceWriteSuccess")
+            if (eventData.data.resourceProvider != "Microsoft.Storage")
             {
                 log.Info("Not a new Azure Storage Resource, not interested");
                 return req.CreateResponse(HttpStatusCode.OK, "Not an Azure Storage Resource");
@@ -46,9 +45,11 @@ namespace EventGridDemo
             string subscriptionID = eventData.data.subscriptionId;
             string tenantID = eventData.data.tenantId;
 
+            // Let's parse the resourceId information into a Dictionary
             string subject = eventData.subject.ToString();
             Dictionary<string, string> subjectDictionary = subject.ParseAzureResourceId();
 
+            // Now login using a Service Principal
             ServicePrincipalLoginInformation sp =
                 new ServicePrincipalLoginInformation
                 {
@@ -56,16 +57,18 @@ namespace EventGridDemo
                     ClientSecret = ConfigurationManager.AppSettings["ClientSecret"]
                 };
 
-            string storageAccountID = eventData.subject;
-            string storageAccountName = subjectDictionary["storageAccounts"];
-
             AzureCredentials cred = new AzureCredentials(sp, tenantID, AzureEnvironment.AzureGlobalCloud);
             IAzure azure = Azure.Authenticate(cred).WithSubscription(subscriptionID);
 
+            string storageAccountID = eventData.subject;
+            string storageAccountName = subjectDictionary["storageAccounts"];
+
             bool? isEncrypted = false;
 
+            //Get the storage account
             var storage = azure.StorageAccounts.GetById(storageAccountID);
 
+            //And now let's check if the Blob encryption is enabled
             if (storage?.Encryption != null)
             {
                 isEncrypted = storage.Encryption.Services.Blob.Enabled;
