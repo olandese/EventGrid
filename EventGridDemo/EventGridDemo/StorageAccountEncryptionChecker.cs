@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Dynamic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -44,12 +46,16 @@ namespace EventGridDemo
             string subscriptionID = eventData.data.subscriptionId;
             string tenantID = eventData.data.tenantId;
 
+            string subject = eventData.subject.ToString();
+            Dictionary<string, string> subjectDictionary = subject.ParseAzureResource();
+
             ServicePrincipalLoginInformation sp = new ServicePrincipalLoginInformation();
 
             sp.ClientId = ConfigurationManager.AppSettings["ClientId"];
             sp.ClientSecret = ConfigurationManager.AppSettings["ClientSecret"];
 
             string storageAccountID = eventData.subject;
+            string storageAccountName = subjectDictionary["storageAccounts"];
 
             AzureCredentials cred = new AzureCredentials(sp, tenantID, AzureEnvironment.AzureGlobalCloud);
             IAzure azure = Azure.Authenticate(cred).WithSubscription(subscriptionID);
@@ -67,11 +73,11 @@ namespace EventGridDemo
 
             if (isEncrypted.GetValueOrDefault())
             {
-                returnText = "Storage Account Encrypted";
+                returnText = $"Storage Account {storageAccountName} is Encrypted";
             }
             else
             {
-                returnText = "Storage Account NOT Encrypted";
+                returnText = $"Storage Account {storageAccountName} is NOT Encrypted"; ;
             }
 
             log.Info(returnText);
@@ -80,6 +86,14 @@ namespace EventGridDemo
             // see https://docs.microsoft.com/en-us/azure/event-grid/delivery-and-retry#retry-intervals
             // in our case we don't need this, we just want to log the result
             return req.CreateResponse(HttpStatusCode.OK, returnText);
+        }
+
+        private static Dictionary<string, string> ParseAzureResource(this string resourceID)
+        {
+            return resourceID.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries)
+                .Select((value, index) => new { Index = index, Value = value }).GroupBy(x => x.Index / 2).Select(
+                    g => new Tuple<string, string>(g.ElementAt(0).Value,
+                        g.ElementAt(1).Value)).ToDictionary(x => x.Item1, x => x.Item2);
         }
     }
 }
