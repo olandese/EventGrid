@@ -1,7 +1,6 @@
 using System;
-using System.Collections.Generic;
+using System.Configuration;
 using System.Dynamic;
-using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -34,13 +33,21 @@ namespace EventGridDemo
             var expConverter = new ExpandoObjectConverter();
             dynamic eventData = JsonConvert.DeserializeObject<ExpandoObject>(array[0].ToString(), expConverter);
 
-            string subscriptionID =  eventData.data.subscriptionId;
+            // We only want to process events when a Storage Account is created successfully 
+            if (eventData.data.resourceProvider != "Microsoft.Storage" || 
+                eventData.eventType != "Microsoft.Resources.ResourceWriteSuccess")
+            {
+                log.Info("Not an Azure Storage Resource");
+                return req.CreateResponse(HttpStatusCode.OK, "Not an Azure Storage Resource");
+            }
+
+            string subscriptionID = eventData.data.subscriptionId;
             string tenantID = eventData.data.tenantId;
 
             ServicePrincipalLoginInformation sp = new ServicePrincipalLoginInformation();
 
-            sp.ClientId = "";
-            sp.ClientSecret = "";
+            sp.ClientId = ConfigurationManager.AppSettings["ClientId"];
+            sp.ClientSecret = ConfigurationManager.AppSettings["ClientSecret"];
 
             string storageAccountID = eventData.subject;
 
@@ -56,9 +63,23 @@ namespace EventGridDemo
                 isEncrypted = storage.Encryption.Services.Blob.Enabled;
             }
 
-            return isEncrypted.GetValueOrDefault()
-                ? req.CreateResponse(HttpStatusCode.OK, "Storage Account Encrypted")
-                : req.CreateResponse(HttpStatusCode.BadRequest, "Storage Account Not Encrypted");
+            string returnText;
+
+            if (isEncrypted.GetValueOrDefault())
+            {
+                returnText = "Storage Account Encrypted";
+            }
+            else
+            {
+                returnText = "Storage Account NOT Encrypted";
+            }
+
+            log.Info(returnText);
+
+            // We always return OK status (200), otherwise the EventGrid is going to retry the call
+            // see https://docs.microsoft.com/en-us/azure/event-grid/delivery-and-retry#retry-intervals
+            // in our case we don't need this, we just want to log the result
+            return req.CreateResponse(HttpStatusCode.OK, returnText);
         }
     }
 }
