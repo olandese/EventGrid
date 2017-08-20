@@ -68,6 +68,7 @@ namespace EventGridDemo
             //Get the storage account
             var storage = azure.StorageAccounts.GetById(storageAccountID);
 
+            //The Storage Account may already be deleted
             if (storage == null)
             {
                 return req.CreateResponse(HttpStatusCode.OK, $"Storage Account {storageAccountName} was not found! ");
