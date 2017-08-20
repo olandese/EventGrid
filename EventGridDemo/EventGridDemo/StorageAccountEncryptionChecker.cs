@@ -68,8 +68,13 @@ namespace EventGridDemo
             //Get the storage account
             var storage = azure.StorageAccounts.GetById(storageAccountID);
 
+            if (storage == null)
+            {
+                return req.CreateResponse(HttpStatusCode.OK, $"Storage Account {storageAccountName} was not found! ");
+            }
+
             //And now let's check if the Blob encryption is enabled
-            if (storage?.Encryption != null)
+            if (storage.Encryption != null)
             {
                 isEncrypted = storage.Encryption.Services.Blob.Enabled;
             }
