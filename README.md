@@ -12,12 +12,10 @@ az functionapp deployment source config --repo-url https://github.com/olandese/E
 
 azure ad sp create -n EventGridTestSP -p Q1w2e3e3r4t5y6
 
-azure ad sp show -c EventGridTestSP --json
+az role assignment create --role Contributor --assignee <appid>
 
-az role assignment create --assignee <appid> --role Contributor
+az webapp config appsettings set -g EventGridTest -n <app_name> --settings ClientSecret=Q1w2e3e3r4t5y6 ClientId=<appid>
 
-az webapp config appsettings set -g EventGridTest -n storagencryptioncheck --settings ClientId=<appid> ClientSecret=Q1w2e3e3r4t5y6
-
-az eventgrid event-subscription create --name CheckStorageAccountEncryption --included-event-types Microsoft.Resources.ResourceWriteSuccess --endpoint "<function_url>"
+az eventgrid event-subscription create --name CheckStorageAccountEncryption --included-event-types Microsoft.Resources.ResourceWriteSuccess --endpoint "https://<app_name>.azurewebsites.net/api/HttpTriggerCheckStorageEncryption"
 
 ```

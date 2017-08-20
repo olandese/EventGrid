@@ -17,8 +17,6 @@ using Newtonsoft.Json.Linq;
 
 public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceWriter log)
 {
-    log.Info($"Webhook was triggered!");
-
     // Get request body
     string data = await req.Content.ReadAsStringAsync();
 
