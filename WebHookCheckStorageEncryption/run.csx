@@ -41,7 +41,7 @@ public static async Task<object> Run(HttpRequestMessage req, TraceWriter log)
     string subject = eventData.subject.ToString();
     Dictionary<string, string> subjectDictionary = subject.ParseAzureResourceId();
 
-    // Now login using a Service Principal
+    // Login using a Service Principal
     ServicePrincipalLoginInformation sp =
         new ServicePrincipalLoginInformation
         {
