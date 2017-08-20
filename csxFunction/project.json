@@ -1,0 +1,10 @@
+{
+    "frameworks": {
+        "net46": {
+            "dependencies": {
+                "Microsoft.ProjectOxford.Face": "1.1.0",
+                "Microsoft.Azure.Management.Fluent": "1.1.3"
+            }
+        }
+    }
+}
