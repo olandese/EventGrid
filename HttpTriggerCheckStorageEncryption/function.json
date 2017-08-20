@@ -1,16 +1,16 @@
 {
     "bindings": [
-        {
-            "type": "httpTrigger",
-            "direction": "in",
-            "webHookType": "genericJson",
-            "name": "req"
-        },
-        {
-            "type": "http",
-            "direction": "out",
-            "name": "res"
-        }
+      {
+        "authLevel": "anonymous",
+        "name": "req",
+        "type": "httpTrigger",
+        "direction": "in"
+      },
+      {
+        "name": "$return",
+        "type": "http",
+        "direction": "out"
+      }
     ],
     "disabled": false
-}
+  }
