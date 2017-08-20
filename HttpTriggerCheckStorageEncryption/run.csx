@@ -15,18 +15,25 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 
-public static async Task<object> Run(HttpRequestMessage req, TraceWriter log)
+public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceWriter log)
 {
     log.Info($"Webhook was triggered!");
 
     // Get request body
     string data = await req.Content.ReadAsStringAsync();
 
+    //log.Info($"Content: {data}");
+    
     // Parse into a dynamic object
     JArray array = JArray.Parse(data);
     var expConverter = new ExpandoObjectConverter();
     dynamic eventData = JsonConvert.DeserializeObject<ExpandoObject>(array[0].ToString(), expConverter);
 
+    if (!IsPropertyExist(eventData, "data"))
+    {
+        log.Info("No data Property found");
+        return req.CreateResponse(HttpStatusCode.OK, "No data Property found");
+    }
     // We only want to process events when a Storage Account is created successfully 
     if (eventData.data.resourceProvider != "Microsoft.Storage")
     {
