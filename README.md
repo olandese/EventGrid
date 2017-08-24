@@ -49,4 +49,4 @@
     az eventgrid event-subscription create --name CheckStorageAccountEncryption --included-event-types Microsoft.Resources.ResourceWriteSuccess --endpoint "https://<app_name>.azurewebsites.net/api/HttpTriggerCheckStorageEncryption"
     ``` 
 
-11. Now create in your subscription some Storage Account, in the function monitor output you will see if they are created with Ecnryption or not.
+11. Now create in your subscription some Storage Accounts, in the function monitor output you will see if they are created with Encryption or not.
