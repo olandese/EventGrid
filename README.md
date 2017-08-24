@@ -30,19 +30,23 @@
     ```azurecli-interactive
     azure ad sp create -n EventGridTestSP -p Q1w2e3e3r4t5y6
     ```
-7. Make the Service Principal Contributor on the subscription, replace <appid> with the appid from the output of step 6 (see the picture below)
+7. Copy the appid from the output of step 6 (see the picture below)
     ![Appid](https://raw.githubusercontent.com/olandese/EventGrid/master/img/principalappid.PNG)
+
+8. Make the Service Principal Contributor on the subscription, replace <appid> with the value from step 7
 
     ```azurecli-interactive
     az role assignment create --role Contributor --assignee <appid>
     ```
-8. Save settings for the function, replace <app_name> with with the one used in step 4 and <appid> with appid from the output of step 6
+9. Save settings for the function, replace <app_name> with with the one used in step 4 and <appid> with appid from the output of step 6
 
     ```azurecli-interactive
     az webapp config appsettings set -g EventGridTest -n <app_name> --settings ClientSecret=Q1w2e3e3r4t5y6 ClientId=<appid>
     ```
-9. Create an Event Grid subscription for all successful deployments and the handler will be the function, replace <app_name> with with the one used in step 4
+10. Create an Event Grid subscription for all successful deployments and the handler will be the function, replace <app_name> with with the one used in step 4
 
     ```azurecli-interactive
     az eventgrid event-subscription create --name CheckStorageAccountEncryption --included-event-types Microsoft.Resources.ResourceWriteSuccess --endpoint "https://<app_name>.azurewebsites.net/api/HttpTriggerCheckStorageEncryption"
     ``` 
+
+11. Now create in your subscription some Storage Account, in the function monitor output you will see if they are created with Ecnryption or not.
