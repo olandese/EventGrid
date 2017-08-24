@@ -30,7 +30,8 @@
     ```azurecli-interactive
     azure ad sp create -n EventGridTestSP -p Q1w2e3e3r4t5y6
     ```
-7. Copy the appid from the output of step 6 (see the picture below)
+7. Copy the appid from the output of step 6, see the picture below:
+
     ![Appid](https://raw.githubusercontent.com/olandese/EventGrid/master/img/principalappid.PNG)
 
 8. Make the Service Principal Contributor on the subscription, replace the `<appid>` with the value from step 7
@@ -50,3 +51,35 @@
     ``` 
 
 11. Now create in your subscription some Storage Accounts, in the function monitor output you will see if they are created with Encryption or not.
+
+## Cleanup 
+
+Clean up all the resources created during the previuos steps:
+
+1. Delete the Resource Group
+
+    ```azurecli-interactive
+    az group delete --name EventGridTest --yes
+    ``` 
+
+2. Delete the Event Grid Subscription
+
+    ```azurecli-interactive
+    az eventgrid event-subscription delete --name CheckStorageAccountEncryption
+    ``` 
+
+3. Get the Service Principal
+
+    ```azurecli-interactive
+    azure ad sp show --search EventGridTestSP
+    ``` 
+
+4. Copy the Service Principal object id, see the picture below:
+
+    ![ObjectID](https://raw.githubusercontent.com/olandese/EventGrid/master/img/principalobjectid.PNG)
+
+5. Delete the Service Principal, replace the `<object_id>` with the one of step 4
+
+    ```azurecli-interactive
+    azure ad sp delete <object_id> --delete-application
+    ``` 
