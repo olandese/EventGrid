@@ -19,7 +19,7 @@
     az functionapp create --name <app_name> --storage-account <storage_name> --resource-group EventGridTest --consumption-plan-location westeurope
     ```
 
-5. Create an automatic deployment to the fucntion app, replace <app_name> with the one used in step 4
+5. Create an automatic deployment to the function app, replace <app_name> with the one used in step 4
 
     ```azurecli-interactive
     az functionapp deployment source config --repo-url https://github.com/olandese/EventGrid --branch master --manual-integration --resource-group EventGridTest --name <app_name> 
