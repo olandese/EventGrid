@@ -38,7 +38,7 @@
     ```azurecli-interactive
     az role assignment create --role Contributor --assignee <appid>
     ```
-9. Save settings for the function, replace <app_name> with with the one used in step 4 and <appid> with appid from the output of step 6
+9. Save settings for the function, replace <app_name> with with the one used in step 4 and <appid> with appid of step 7
 
     ```azurecli-interactive
     az webapp config appsettings set -g EventGridTest -n <app_name> --settings ClientSecret=Q1w2e3e3r4t5y6 ClientId=<appid>
