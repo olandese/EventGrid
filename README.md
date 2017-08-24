@@ -54,7 +54,7 @@
 
 ## Cleanup 
 
-Cleanup all the resources created during the previous steps:
+If you want to cleanup all the resources created during the previous steps:
 
 1. Delete the Resource Group
 
@@ -81,5 +81,5 @@ Cleanup all the resources created during the previous steps:
 5. Delete the Service Principal, replace the `<object_id>` with the one of step 4
 
     ```azurecli-interactive
-    azure ad sp delete <object_id> --delete-application
+    azure ad sp delete <object_id> --delete-application --quiet
     ``` 
