@@ -54,7 +54,7 @@
 
 ## Cleanup 
 
-Clean up all the resources created during the previuos steps:
+Cleanup all the resources created during the previous steps:
 
 1. Delete the Resource Group
 
