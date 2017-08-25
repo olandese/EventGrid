@@ -39,12 +39,12 @@
     ```azurecli-interactive
     az role assignment create --role Contributor --assignee <appid>
     ```
-9. Save settings for the function, replace `<app_name>` with with the one used in step 4 and `<appid>` with appid of step 7
+9. Save settings for the function, replace `<app_name>` with the one used in step 4 and `<appid>` with appid of step 7
 
     ```azurecli-interactive
     az webapp config appsettings set -g EventGridTest -n <app_name> --settings ClientSecret=Q1w2e3e3r4t5y6 ClientId=<appid>
     ```
-10. Create an Event Grid subscription for all successful deployments and the handler will be the function, replace `<app_name>` with with the one used in step 4
+10. Create an Event Grid subscription for all successful deployments and the handler will be the function, replace `<app_name>` with the one used in step 4
 
     ```azurecli-interactive
     az eventgrid event-subscription create --name CheckStorageAccountEncryption --included-event-types Microsoft.Resources.ResourceWriteSuccess --endpoint "https://<app_name>.azurewebsites.net/api/HttpTriggerCheckStorageEncryption"
