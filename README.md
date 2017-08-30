@@ -1,57 +1,61 @@
 # EventGrid
 
-1. Login in the Azure Portal and start the Azure Cloud Shell
+1. Login in the Azure Portal and start the Azure Cloud Shell  
 
-2. Create a new Resource Group
-
-    ```azurecli-interactive
-    az group create --name EventGridTest --location westeurope
-    ```
-3. Create a new Storage Account, replace `<storage_name>` with a unique name: 
+2. Set the following variables, replace `<storage_name>` and `<app_name>` with a unique name:
 
     ```azurecli-interactive
-    az storage account create --location westeurope --resource-group EventGridTest --sku Standard_LRS --name <storage_name>
+    rgName="EventGridTest"
+    storageaccountName=<storage_name>
+    appName=<app_name>
     ```
 
-4. Create a new Function App, replace `<app_name>` with a unique name and `<storage_name>` with the one used in step 3
+3. Create a new Resource Group:
 
     ```azurecli-interactive
-    az functionapp create --resource-group EventGridTest --consumption-plan-location westeurope --name <app_name> --storage-account <storage_name>
+    az group create --name $rgName --location westeurope
+    ```
+4. Create a new Storage Account:
+
+    ```azurecli-interactive
+    az storage account create --location westeurope --resource-group $rgName --sku Standard_LRS --name $storageaccountName
     ```
 
-5. Create an automatic deployment to the function app, replace `<app_name>` with the one used in step 4
+5. Create a new Function App:
 
     ```azurecli-interactive
-    az functionapp deployment source config --repo-url https://github.com/olandese/EventGrid --branch master --manual-integration --resource-group EventGridTest --name <app_name> 
+    az functionapp create --resource-group $rgName --consumption-plan-location westeurope --name $appName --storage-account $storageaccountName
     ```
 
-6. Create a new Service Principal
+6. Create an automatic deployment to the function app:
 
     ```azurecli-interactive
-    azure ad sp create -n EventGridTestSP -p Q1w2e3e3r4t5y6
+    az functionapp deployment source config --repo-url https://github.com/olandese/EventGrid --branch master --manual-integration --resource-group $rgName --name $appName 
     ```
-7. Copy the appid from the output of step 6, see the picture below:
 
-    ![Appid](https://raw.githubusercontent.com/olandese/EventGrid/master/img/principalappid.PNG)
-
-8. Make the Service Principal Contributor on the subscription, replace the `<appid>` with the value from step 7
+7. Create a new Service Principal and make it Contributor on the subscription:
 
     ```azurecli-interactive
-    az role assignment create --role Contributor --assignee <appid>
+    spId="$(az ad sp create-for-rbac -n "EventGridTestSP" --role contributor --password Q1w2e3r4t5y6 --query "[appId] | [0]" --output tsv)"
     ```
-9. Save settings for the function, replace `<app_name>` with the one used in step 4 and `<appid>` with appid of step 7
+8. Save the Service Principal values as settings for the function:
 
     ```azurecli-interactive
-    az webapp config appsettings set -g EventGridTest --name <app_name> --settings ClientSecret=Q1w2e3e3r4t5y6 ClientId=<appid> 
+    az webapp config appsettings set -g EventGridTest --name $appName --settings ClientSecret=Q1w2e3r4t5y6 ClientId=$spId 
     ```
-10. Create an Event Grid subscription for all successful deployments and the handler will be the function, replace `<app_name>` with the one used in step 4
+9. Create an Event Grid subscription for all successful deployments and the handler will be the function:
 
     ```azurecli-interactive
-    az eventgrid event-subscription create --name CheckStorageAccountEncryption --included-event-types Microsoft.Resources.ResourceWriteSuccess --endpoint "https://<app_name>.azurewebsites.net/api/HttpTriggerCheckStorageEncryption"
+    az eventgrid event-subscription create --name CheckStorageAccountEncryption --included-event-types Microsoft.Resources.ResourceWriteSuccess --endpoint "https://$appName.azurewebsites.net/api/HttpTriggerCheckStorageEncryption"
     ``` 
 
-11. Now create in your subscription some Storage Accounts, in the function monitor output you will see if they are created with Encryption or not.
+10. Now create in your subscription some Storage Accounts, in the function monitor output you will see if they are created with Encryption or not:
 
+    ```azurecli-interactive
+    az storage account create --resource-group EventGridTest --encryption blob --sku Standard_LRS --name encryptedtest
+
+    az storage account create --resource-group EventGridTest  --sku Standard_LRS --name notencryptedtest    
+    ``` 
 ## Cleanup 
 
 If you want to cleanup all the resources created during the previous steps:
@@ -68,18 +72,8 @@ If you want to cleanup all the resources created during the previous steps:
     az eventgrid event-subscription delete --name CheckStorageAccountEncryption
     ``` 
 
-3. Get the Service Principal
+3. Delete the Service Principal
 
     ```azurecli-interactive
-    azure ad sp show --search EventGridTestSP
-    ``` 
-
-4. Copy the Service Principal object id, see the picture below:
-
-    ![ObjectID](https://raw.githubusercontent.com/olandese/EventGrid/master/img/principalobjectid.PNG)
-
-5. Delete the Service Principal, replace the `<object_id>` with the one of step 4
-
-    ```azurecli-interactive
-    azure ad sp delete <object_id> --delete-application --quiet
+    az ad sp delete --id "http://EventGridTestSP"
     ``` 
