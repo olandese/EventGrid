@@ -10,13 +10,13 @@
 3. Create a new Storage Account, replace `<storage_name>` with a unique name: 
 
     ```azurecli-interactive
-    az storage account create --name <storage_name> --location westeurope --resource-group EventGridTest --sku Standard_LRS
+    az storage account create --location westeurope --resource-group EventGridTest --sku Standard_LRS --name <storage_name>
     ```
 
 4. Create a new Function App, replace `<app_name>` with a unique name and `<storage_name>` with the one used in step 3
 
     ```azurecli-interactive
-    az functionapp create --name <app_name> --storage-account <storage_name> --resource-group EventGridTest --consumption-plan-location westeurope
+    az functionapp create --resource-group EventGridTest --consumption-plan-location westeurope --name <app_name> --storage-account <storage_name>
     ```
 
 5. Create an automatic deployment to the function app, replace `<app_name>` with the one used in step 4
@@ -42,7 +42,7 @@
 9. Save settings for the function, replace `<app_name>` with the one used in step 4 and `<appid>` with appid of step 7
 
     ```azurecli-interactive
-    az webapp config appsettings set -g EventGridTest -n <app_name> --settings ClientSecret=Q1w2e3e3r4t5y6 ClientId=<appid>
+    az webapp config appsettings set -g EventGridTest --name <app_name> --settings ClientSecret=Q1w2e3e3r4t5y6 ClientId=<appid> 
     ```
 10. Create an Event Grid subscription for all successful deployments and the handler will be the function, replace `<app_name>` with the one used in step 4
 
