@@ -52,9 +52,9 @@
 10. Now create in your subscription some Storage Accounts, in the function monitor output you will see if they are created with Encryption or not:
 
     ```azurecli-interactive
-    az storage account create --resource-group EventGridTest --encryption blob --sku Standard_LRS --name encryptedtest
+    az storage account create --resource-group $rgName --encryption blob --sku Standard_LRS --name encrypttest
 
-    az storage account create --resource-group EventGridTest  --sku Standard_LRS --name notencryptedtest    
+    az storage account create --resource-group $rgName --sku Standard_LRS --name notencrypttest    
     ``` 
 ## Cleanup 
 
