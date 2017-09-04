@@ -1,7 +1,7 @@
 # EventGrid
 
 ## Description 
-In this demo, we use Event Grid to publish Azure Subscriptions events to an Azure Function.
+In this demo we use Event Grid to publish Azure Subscriptions events to an Azure Function.
 </BR>
 The Event Grid events will be filtered to be of "Microsoft.Resources.ResourceWriteSuccess" kind. 
 </BR>
