@@ -3,7 +3,7 @@
 ## Description 
 In this demo we use Event Grid to publish Azure Subscriptions events to an Azure Function.
 </BR>
-The Event Grid events will be filtered to be of "Microsoft.Resources.ResourceWriteSuccess" kind. 
+The Event Grid events will be filtered to be of the "Microsoft.Resources.ResourceWriteSuccess" kind. 
 </BR>
 Whenever a Storage Account will be created the function will output if the storage account is using encryption or not. 
 
