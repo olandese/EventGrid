@@ -1,5 +1,14 @@
 # EventGrid
 
+## Description 
+In this demo, we use Event Grid to publish Azure Subscriptions events to an Azure Function.
+</BR>
+The Event Grid events will be filtered to be of "Microsoft.Resources.ResourceWriteSuccess" kind. 
+</BR>
+Whenever a Storage Account will be created the function will output if the storage account is using encryption or not. 
+
+## Setup
+
 1. Login in the Azure Portal and start the Azure Cloud Shell  
 
 2. Set the following variables, replace `<storage_name>` and `<app_name>` with a unique name:
