@@ -35,7 +35,7 @@ public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceW
     // We only want to process events when a Storage Account is created successfully 
     if (eventData.data.resourceProvider != "Microsoft.Storage")
     {
-        log.Info("Not a new Azure Storage Resource, not interested");
+        log.Info("Not an Azure Storage Resource, not interested");
         return req.CreateResponse(HttpStatusCode.OK, "Not an Azure Storage Resource");
     }
 
