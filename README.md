@@ -45,9 +45,7 @@ Whenever a Storage Account will be created the function will output if the stora
 7. Create a new Service Principal and make it Contributor on the subscription:
 
     ```azurecli-interactive
-    spId="$(az ad sp create-for-rbac -n "
-    
-    SP" --role contributor --password Q1w2e3r4t5y6 --query "[appId] | [0]" --output tsv)"
+    spId="$(az ad sp create-for-rbac -n "EventGridTestSP" --role contributor --password Q1w2e3r4t5y6 --query "[appId] | [0]" --output tsv)"
     ```
 8. Save the Service Principal values as settings for the function:
 
