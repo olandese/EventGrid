@@ -45,12 +45,14 @@ Whenever a Storage Account will be created the function will output if the stora
 7. Create a new Service Principal and make it Contributor on the subscription:
 
     ```azurecli-interactive
-    spId="$(az ad sp create-for-rbac -n "EventGridTestSP" --role contributor --password Q1w2e3r4t5y6 --query "[appId] | [0]" --output tsv)"
+    spId="$(az ad sp create-for-rbac -n "
+    
+    SP" --role contributor --password Q1w2e3r4t5y6 --query "[appId] | [0]" --output tsv)"
     ```
 8. Save the Service Principal values as settings for the function:
 
     ```azurecli-interactive
-    az webapp config appsettings set -g EventGridTest --name $appName --settings ClientSecret=Q1w2e3r4t5y6 ClientId=$spId 
+    az webapp config appsettings set -g $rgName --name $appName --settings ClientSecret=Q1w2e3r4t5y6 ClientId=$spId 
     ```
 9. Create an Event Grid subscription for all successful deployments and the handler will be the function:
 
@@ -72,7 +74,7 @@ If you want to cleanup all the resources created during the previous steps:
 1. Delete the Resource Group
 
     ```azurecli-interactive
-    az group delete --name EventGridTest --yes
+    az group delete --name $rgName --yes
     ``` 
 
 2. Delete the Event Grid Subscription
